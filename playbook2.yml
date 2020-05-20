@@ -1,0 +1,33 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Add vm 1 name
+    lineinfile:
+      path: /etc/hosts
+      line: 192.168.3.2 server1
+
+  - name: get pub key
+    slurp:
+      src: /vagrant/id_rsa.pub
+    register: key
+
+  - name: update auth keys
+    blockinfile:
+      block: "{{ key['content'] | b64decode }}"
+      dest: /home/vagrant/.ssh/authorized_keys
+      remote_src: yes
+
+  - name: copy ssh pub key
+    copy:
+      src: /vagrant/id_rsa.pub
+      dest: /home/vagrant/.ssh/id_rsa.pub
+      remote_src: yes 
+
+  - name: copy ssh private key
+    copy:
+      src: /vagrant/id_rsa
+      dest: /home/vagrant/.ssh/id_rsa
+      remote_src: yes

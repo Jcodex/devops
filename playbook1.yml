@@ -1,0 +1,83 @@
+---
+- hosts: all
+  become: yes 
+  become_method: sudo
+ 
+  tasks:
+  - name: Install git
+    apt:
+      name: git
+      state: latest
+      update_cache: yes
+
+  - git:
+      repo: https://github.com/Jcodex/module2.git
+      dest: /home/mygit
+      version: task2
+
+  - name: register content of test.txt
+    slurp:
+      src: /home/mygit/test.txt
+    register: file
+
+  - debug:
+      msg: test.txt content is {{ file['content'] | b64decode }}
+
+  - name: Add vm 2 name
+    lineinfile:
+      path: /etc/hosts
+      line: 192.168.3.3 server2
+
+  - openssh_keypair:
+      path: /home/vagrant/.ssh/id_rsa
+
+  - name: Change ssh ownership
+    file:
+      path: /home/vagrant/.ssh/id_rsa
+      owner: vagrant
+
+  - name: Change ssh ownership
+    file:
+      path: /home/vagrant/.ssh/id_rsa.pub
+      owner: vagrant
+
+  - name: Copy ssh pub key
+    copy:
+      src: /home/vagrant/.ssh/id_rsa.pub
+      dest: /vagrant/id_rsa.pub
+      remote_src: yes
+
+  - name: Copy ssh private key
+    copy:
+      src: /home/vagrant/.ssh/id_rsa
+      dest: /vagrant/id_rsa
+      remote_src: yes
+
+  - name: get pub key
+    slurp:
+      src: /vagrant/id_rsa.pub
+    register: key
+
+  - name: update auth keys
+    blockinfile:
+      block: "{{ key['content'] | b64decode }}"
+      dest: /home/vagrant/.ssh/authorized_keys
+      remote_src: yes
+
+
+
+
+
+
+ 
+#  - name: add ssh
+#    copy:
+#      src: /vagrant/.ssh/id_rsa.pub
+#      dest: /home/vagrant/.ssh/authorized_keys
+#      remote_src: yes
+
+#  - name: update auth keys
+#    blockinfile:
+#      block: "{{ lookup('file', '/home/jcod/Desktop/module2/id_rsa.pub') }}"
+#      dest: /home/vagrant/.ssh/authorized_keys
+#      remote_src: yes
