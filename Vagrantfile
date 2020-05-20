@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
 
-  N = 3
+  N = 4
   (1..N).each do |server_id|
     config.vm.define "server#{server_id}" do |server|
     server.vm.box = "hashicorp/bionic64"
@@ -17,17 +17,6 @@ Vagrant.configure("2") do |config|
           ansible.playbook = "playbook.yml"
         end
       end
-    end
-  end
-
-  config.vm.define "server#{N}" do |server|
-    server.vm.box = "hashicorp/bionic64"
-    server.vm.hostname = "server#{N+1}"
-    server.vm.network "private_network", ip: "192.168.3.#{N+2}"
-    server.vm.provision :ansible do |ansible|
-      ansible.limit = "all"
-      ansible.verbose = "v"
-      ansible.playbook = "playbook2.yml"
     end
   end
 end
