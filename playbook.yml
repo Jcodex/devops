@@ -1,0 +1,219 @@
+---
+- hosts: all, !server1
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Install JDK
+    apt:
+      name: default-jdk
+      state: latest
+      update_cache: yes
+
+  - name: Ensure group "tomcat" exists
+    group:
+      name: tomcat
+      state: present
+
+  - name: Add the user 'tomcat'
+    user:
+      name: tomcat
+      comment: tomtom
+      uid: 1040
+      group: tomcat
+
+  - name: Download tomcat
+    get_url:
+      url: http://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.34/bin/apache-tomcat-9.0.34.tar.gz
+      dest: /tmp
+
+  - name: Create a directory if it does not exist
+    file:
+      path: /usr/share/tomcat
+      state: directory
+
+  - name: Extract apache
+    unarchive:
+      src: /tmp/apache-tomcat-9.0.34.tar.gz
+      dest: /usr/share/tomcat
+      remote_src: yes
+      creates: /usr/share/tomcat/apache-tomcat-9.0.34
+
+  - name: Change file ownership, group and permissions
+    file:
+      path: /usr/share/tomcat
+      owner: tomcat
+      group: tomcat
+      recurse: yes
+
+  - name: configure tomcat
+    blockinfile:
+      path: /etc/systemd/system/tomcat.service
+      create: yes
+      block: |
+        [Unit]
+        Description=Tomcat 9 servlet container
+        After=network.target
+        [Service]
+        Type=forking
+        User=tomcat
+        Group=tomcat
+        Environment="JAVA_HOME=/usr/lib/jvm/default-java"
+        Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom -Djava.awt.headless=true"
+        Environment="CATALINA_BASE=/usr/share/tomcat/apache-tomcat-9.0.34"
+        Environment="CATALINA_HOME=/usr/share/tomcat/apache-tomcat-9.0.34"
+        Environment="CATALINA_PID=/usr/share/tomcat/apache-tomcat-9.0.34/temp/tomcat.pid"
+        Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+        ExecStart=/usr/share/tomcat/apache-tomcat-9.0.34/bin/startup.sh
+        ExecStop=/opt/tomcat/apache-tomcat-9.0.34/bin/shutdown.sh
+        [Install]
+        WantedBy=multi-user.target
+  
+  - name: Create a directory for index.html
+    file:
+      path: /usr/share/tomcat/webapps/www/
+      state: directory
+      recurse: yes
+
+  - name: create index.html
+    blockinfile:
+      path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/www/index.html
+      create: yes
+      marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+      block: |
+        <!DOCTYPE html>
+        <html>
+           <head>
+             <title>TestTestTest</title>
+           </head>
+           <body>
+             <p>HelloWorld</p>
+           </body>
+        </html>
+  - name: start tomcat                 
+    systemd:
+      daemon_reload: yes
+      state: started
+      name: tomcat
+
+  - name: enable tomcat                 
+    service:
+      enabled: yes
+      name: tomcat
+
+  - name: Allow all access to tcp port 8080
+    ufw:
+      rule: allow
+      port: '8080'
+      proto: tcp
+
+  - name: create tomcat user
+    blockinfile:
+      path: /usr/share/tomcat/apache-tomcat-9.0.34/conf/tomcat-users.xml
+      create: yes
+      marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+      block: |
+        <role rolename="admin-gui"/>
+        <role rolename="manager-gui"/>
+        <user username="admin" password="admin" roles="admin-gui,manager-gui"/>
+        </tomcat-users>
+  - name: Allow tomcat connection from host
+    lineinfile:
+      path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/manager/META-INF/context.xml
+      regexp: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'
+      line: allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192.168.3.1"
+
+  - name: Allow tomcat connection from host      
+    lineinfile:
+      path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/host-manager/META-INF/context.xml
+      regexp: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'
+      line: allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192.168.3.1"
+
+  - name: restart tomcat
+    systemd:
+      name: tomcat
+      state: restarted
+
+- hosts: server1
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: Install apache httpd
+    apt:
+      name: apache2
+      state: latest
+      update_cache: yes
+
+  - apache2_module:
+      state: present
+      name: proxy
+
+  - apache2_module:
+      state: present
+      name: proxy_http
+
+  - apache2_module:
+      state: present
+      name: proxy_balancer
+
+  - apache2_module:
+      state: present
+      name: lbmethod_byrequests
+ 
+  - apache2_module:
+      state: present
+      name: ssl
+
+  - name: reconfigure default apache site
+    blockinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      marker: "{mark}"
+      marker_begin: "<VirtualHost *:80>"
+      marker_end: "</VirtualHost>"
+      block: |-
+        SSLEngine on
+        SSLCertificateFile /etc/apache2/ssl/apache.crt
+        SSLCertificateKeyFile /etc/apache2/ssl/apache.key
+        
+        <Proxy balancer://mycluster>
+        </Proxy>
+          ProxyPreserveHost On
+          ProxyPass / balancer://mycluster/
+          ProxyPassReverse / balancer://mycluster/
+      state: present
+
+  - name: Configure all tomcat servers
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      line: "BalancerMember http://{{ item }}:8080"
+      insertafter: <Proxy balancer://mycluster>
+      state: present
+      create: yes
+    loop: "{{ groups['all'] | map('extract',hostvars,['ansible_eth1','ipv4','address']) | list }}"
+
+  - name: Create a directory if it does not exist
+    file:
+      path: /etc/apache2/ssl
+      state: directory
+
+  - name: Copy cert
+    copy: src={{ item }} dest=/etc/apache2/ssl/
+    with_items:
+    - apache.crt
+    - apache.key
+
+  - name: reload apache2
+    systemd:
+      state: restarted
+      name: apache2
+
+- hosts: server3
+  become: yes
+  become_method: sudo
+  tasks:
+    
+  - name: change content of 1 of tomcat servers
+    lineinfile:
+      path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/www/index.html
+      regexp: ^<p>HelloWorld</p>
+      line: HelloWorld2
