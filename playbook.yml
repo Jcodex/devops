@@ -111,22 +111,23 @@
       path: /usr/share/tomcat/apache-tomcat-9.0.34/conf/tomcat-users.xml
       create: yes
       marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+      insertbefore: </tomcat-users>
       block: |
         <role rolename="admin-gui"/>
         <role rolename="manager-gui"/>
         <user username="admin" password="admin" roles="admin-gui,manager-gui"/>
-        </tomcat-users>
+ 
   - name: Allow tomcat connection from host
     lineinfile:
       path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/manager/META-INF/context.xml
       regexp: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'
-      line: allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192.168.3.1"
+      line: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192.168.3.1|192.168.3.2" />'
 
   - name: Allow tomcat connection from host      
     lineinfile:
       path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/host-manager/META-INF/context.xml
       regexp: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'
-      line: allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192.168.3.1"
+      line: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192.168.3.1|192.168.3.2" />'
 
   - name: restart tomcat
     systemd:
@@ -182,10 +183,9 @@
          enabled: true
 
      - git:
-         repo: https://github.com/Jcodex/dockertask.git
+         repo: https://github.com/Jcodex/devops.git
          dest: /home/mygit
          version: task5
-
 
      - name: Create initialization scripts directory
        file: path=/var/lib/jenkins/init.groovy.d
@@ -199,7 +199,6 @@
          path: /etc/default/jenkins
          regexp: ^JAVA_ARGS=
          line: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false $JAVA_ARGS -Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true"'
-         become: true
 
      - name: Copy groovy script
        command:
@@ -212,9 +211,13 @@
          state: restarted
 
      - name: wait for jenkins service
-       wait_for:
-         timeout: 10
-         delegate_to: localhost
+       uri:
+         url: "http://192.168.3.3:8080/login"
+         status_code: 200
+       register: login_page
+       until: login_page.status == 200
+       retries: 60
+       delay: 5
 
      - name: remove used groovy scripts
        command:
@@ -232,16 +235,20 @@
          state: restarted
 
      - name: Wait untill jenkins apply changes
-       wait_for:
-         timeout: 20
-       delegate_to: localhost
+       uri:
+         url: "http://192.168.3.3:8080/login"
+         status_code: 200
+       register: login_page
+       until: login_page.status == 200
+       retries: 60
+       delay: 5
 
      - name: Download git plugin
        jenkins_plugin:
          name: git
          url_username: admin
          url_password: admin
-         url: http://localhost:8080
+         url: http://192.168.3.3:8080
        retries: 3
        delay: 5
        register: result
@@ -330,6 +337,12 @@
       state: present
       create: yes
     loop: "{{ groups['all'] | map('extract',hostvars,['ansible_eth1','ipv4','address']) | list }}"
+
+  - name: remove jenkins from load balancing
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: 'BalancerMember http://192.168.3.3:8080'
+      state: absent
 
   - name: Create a directory if it does not exist
     file:
