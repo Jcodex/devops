@@ -1,0 +1,66 @@
+apply plugin : 'java'
+apply plugin: 'war'
+
+repositories {
+mavenCentral()
+}
+
+dependencies{
+compile group: 'log4j', name: 'log4j', version: '1.2.17'
+compile group: 'commons-io', name: 'commons-io', version: '2.6'
+}
+
+task greet()  {
+doLast{
+        new File(buildDir, "greetings.txt").text = """
+Version: $version
+"""
+println ("Curent build version was writen in build/greetings.txt")
+}
+}
+task update {
+  doLast{
+    def propsFile = file("./gradle.properties")
+    def v = propsFile.getText().find(version)
+    String minor=v.substring(v.lastIndexOf('.')+1)
+    int m = minor.toInteger()+1
+    String major = v.substring(0,v.length()-1)
+    println ("update from " + v + " to " + major + m )
+    String s = propsFile.getText().replaceFirst("version = $version","version = "+major+m+"")
+    propsFile.setText(s)
+  }
+}
+
+task sorting {
+doLast{
+ //unsorted array of versions
+ def unsortedArray = [ 
+ '1.1.3', 
+ '1.1.0', 
+ '1.10.2', 
+ '1.9.1', 
+ '1.1.8', 
+ '1.1.15' 
+ ]
+  println("unsorted: " + unsortedArray)
+
+  def last_digit = { x->
+    x = x.substring(x.lastIndexOf('.')+1)
+    return Integer.valueOf(x)                             // get integer value of last number in version
+  }
+
+  def second_digit = { x-> 
+    x = last_digit( x.substring(0, x.lastIndexOf('.')) ) 
+    return Integer.valueOf(x)                            // get value after first '.' (1.10.2 -> 10)
+  }
+
+  def version_weight = { x->
+  return ( last_digit(x) + ( second_digit(x)*100 ) )     // setup custom integer value of string
+  }                                                      // 1.1.15 = 1*100 + 15*1 = 115
+
+unsortedArray.sort{a,b -> version_weight(a) <=> version_weight(b) ?: a <=> b}
+
+println ("sorted: " + unsortedArray)  
+}
+}
+build.dependsOn greet
