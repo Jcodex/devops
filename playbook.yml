@@ -277,6 +277,42 @@
          name: jenkins
          state: restarted
 
+     - name: Download nexus
+        get_url:
+          url: http://www.sonatype.org/downloads/nexus-latest-bundle.zip
+          dest: /opt
+
+     - name: Unarchive a file that is already on the remote machine
+       unarchive:
+         src: /opt/nexus-latest-bundle.zip
+         dest: /opt
+         remote_src: yes
+
+     - name: Create user for nexus
+       user:
+         name: nexus
+
+     - name: Allow nexus start without password
+       lineinfile:
+         path: /etc/sudoers
+         line: 'nexus ALL=(ALL) NOPASSWD: ALL'
+       become: true
+
+     - name: Change nexus ownership
+       file:
+         path: /opt/nexus-2.14.18-01
+         owner: nexus
+
+     - name: Configure nexus to run as custom user
+       lineinfile:
+         path: /opt/nexus-2.14.18-01/bin/nexus.rc
+         line: "run_as_user="nexus""
+
+     - file:
+        src: /opt/nexus-2.14.18-01/bin/nexus
+        dest: /etc/init.d/nexus
+        state: link
+    
 
 #################################################### Install apache
 
