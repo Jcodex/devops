@@ -277,14 +277,19 @@
          name: jenkins
          state: restarted
 
-     - name: Download nexus
-        get_url:
-          url: http://www.sonatype.org/downloads/nexus-latest-bundle.zip
-          dest: /opt
+    # - name: Download nexus
+    #   get_url:
+    #     url: http://www.sonatype.org/downloads/nexus-latest-bundle.zip
+    #     dest: /opt
+    
+     - name: Install zip
+       apt:
+         name: zip
+         state: present
 
-     - name: Unarchive a file that is already on the remote machine
+     - name: Unarchive nexus
        unarchive:
-         src: /opt/nexus-latest-bundle.zip
+         src: /opt/nexus-2.14.18-01-bundle.zip
          dest: /opt
          remote_src: yes
 
@@ -306,7 +311,8 @@
      - name: Configure nexus to run as custom user
        lineinfile:
          path: /opt/nexus-2.14.18-01/bin/nexus.rc
-         line: "run_as_user="nexus""
+         line: 'run_as_user="nexus"'
+         create: yes
 
      - file:
         src: /opt/nexus-2.14.18-01/bin/nexus
