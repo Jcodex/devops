@@ -277,10 +277,10 @@
          name: jenkins
          state: restarted
 
-    # - name: Download nexus
-    #   get_url:
-    #     url: http://www.sonatype.org/downloads/nexus-latest-bundle.zip
-    #     dest: /opt
+     - name: Download nexus
+       get_url:
+         url: http://www.sonatype.org/downloads/nexus-latest-bundle.zip
+         dest: /opt
     
      - name: Install zip
        apt:
