@@ -307,6 +307,7 @@
        file:
          path: /opt/nexus-2.14.18-01
          owner: nexus
+         recurse: yes
 
      - name: Configure nexus to run as custom user
        lineinfile:
