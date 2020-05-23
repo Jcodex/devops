@@ -73,7 +73,7 @@ apply plugin: 'maven-publish'
 publishing {
   publications {
     maven(MavenPublication) {
-      artifact("build/libs/mygit-$version"+".war") {
+      artifact("build/libs/gradleapp-$version"+".war") {
         extension 'war'
       }
     }
