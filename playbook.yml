@@ -309,10 +309,17 @@
          owner: nexus
          recurse: yes
 
+     - name: Change nexus ownership
+       file:
+         path: /opt/sonatype-work
+         owner: nexus
+         recurse: yes
+
      - name: Configure nexus to run as custom user
        lineinfile:
          path: /opt/nexus-2.14.18-01/bin/nexus.rc
-         line: 'run_as_user="nexus"'
+         line: 'RUN_AS_USER=nexus'
+         regexp: 'RUN_AS_USER='
          create: yes
 
      - file:
