@@ -1,0 +1,24 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.39">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.80">
+    <script>node {
+    stage &apos;Clone sources&apos;
+          git url: &apos;https://github.com/Jcodex/devops.git&apos;, branch: &apos;task5&apos;
+    
+    stage(&apos;Gradle Update&apos;) 
+        sh &apos;./gradlew update&apos;
+    
+    stage(&apos;Gradle Build&apos;) 
+        sh &apos;./gradlew clean build publish&apos;
+
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
