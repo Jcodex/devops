@@ -461,6 +461,15 @@
       force_basic_auth: yes
       status_code: 201
 
+  - name: wait for webapp appearing in nexus
+     uri:
+       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/"
+       status_code: 200
+     register: result
+     until: result.status == 200
+     retries: 60
+     delay: 5
+
 - hosts: server3
   become: yes
   become_method: sudo
