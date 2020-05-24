@@ -463,7 +463,7 @@
 
   - name: wait for webapp appearing in nexus
     uri:
-      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/"
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war"
       status_code: 200
     register: result
     until: result.status == 200
@@ -488,5 +488,5 @@
 
   - name: download gradle app
     get_url:
-      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/pipe/1.0.1/pipe-1.0.1.war
+      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
