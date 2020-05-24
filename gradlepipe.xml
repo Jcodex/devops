@@ -1,3 +1,4 @@
+
 <?xml version='1.1' encoding='UTF-8'?>
 <flow-definition plugin="workflow-job@2.39">
   <actions/>
@@ -8,11 +9,11 @@
     <script>node {
     stage &apos;Clone sources&apos;
           git url: &apos;https://github.com/Jcodex/devops.git&apos;, branch: &apos;task5&apos;
-    
-    stage(&apos;Gradle Update&apos;) 
+
+    stage(&apos;Gradle Update&apos;)
         sh &apos;./gradlew update&apos;
-    
-    stage(&apos;Gradle Build&apos;) 
+
+    stage(&apos;Gradle Build&apos;)
         sh &apos;./gradlew clean build publish&apos;
 
 }
@@ -20,5 +21,6 @@
     <sandbox>true</sandbox>
   </definition>
   <triggers/>
+  <authToken>build_me</authToken>
   <disabled>false</disabled>
 </flow-definition>
