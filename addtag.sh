@@ -11,6 +11,6 @@ version="${value/version = /v}"
 sudo git tag -a "$version" -m "version update"
 sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops" "$version" 
 version="${value//version = }"
-sudo chown jenkins gradle.properties
+#sudo chown jenkins gradle.properties
 sudo sed -i "s/$oldversion/$version/g" rolebook.yml
 sudo sed -i "s/$oldversion/$version/g" oldversion.txt

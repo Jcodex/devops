@@ -50,7 +50,7 @@
 
   - name: wait for webapp appearing in nexus
     uri:
-      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war"
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war"
       status_code: 200
     register: result
     until: result.status == 200
@@ -76,7 +76,7 @@
 
   - name: download gradle app on tomcat1
     get_url:
-      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war
+      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
 
 - hosts: server1
@@ -107,7 +107,7 @@
   tasks:
   - name: download gradle app on tomcat2
     get_url:
-      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war
+      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
 
 - hosts: server1
