@@ -47,10 +47,15 @@
       method: GET
       force_basic_auth: yes
       status_code: 201
-
+  - debug:
+      msg: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
   - name: wait for webapp appearing in nexus
     uri:
+<<<<<<< HEAD
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war"
+=======
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
+>>>>>>> task5
       status_code: 200
     register: result
     until: result.status == 200
@@ -76,7 +81,11 @@
 
   - name: download gradle app on tomcat1
     get_url:
+<<<<<<< HEAD
       url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war
+=======
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
+>>>>>>> task5
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
 
 - hosts: server1
@@ -107,7 +116,11 @@
   tasks:
   - name: download gradle app on tomcat2
     get_url:
+<<<<<<< HEAD
       url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war
+=======
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
+>>>>>>> task5
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
 
 - hosts: server1
