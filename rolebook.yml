@@ -66,8 +66,8 @@
     lineinfile:
       path: /etc/apache2/sites-available/000-default.conf
       regexp: 'BalancerMember http://192.168.3.4:8080'
-      line: #BalancerMember http://192.168.3.4:8080
-    state: present
+      line: "#BalancerMember http://192.168.3.4:8080"
+      state: present
 
 - hosts: server3
   become: yes
@@ -88,7 +88,7 @@
       path: /etc/apache2/sites-available/000-default.conf
       regexp: '#BalancerMember http://192.168.3.4:8080'
       line: BalancerMember http://192.168.3.4:8080
-    state: present
+      state: present
 
 - hosts: server1
   become: yes
@@ -98,8 +98,8 @@
     lineinfile:
       path: /etc/apache2/sites-available/000-default.conf
       regexp: 'BalancerMember http://192.168.3.5:8080'
-      line: #BalancerMember http://192.168.3.5:8080
-    state: present
+      line: "#BalancerMember http://192.168.3.5:8080"
+      state: present
 
 - hosts: server4
   become: yes
@@ -119,5 +119,5 @@
       path: /etc/apache2/sites-available/000-default.conf
       regexp: '#BalancerMember http://192.168.3.5:8080'
       line: BalancerMember http://192.168.3.5:8080
-    state: present
+      state: present
 #####################################################
