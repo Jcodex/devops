@@ -13,10 +13,16 @@
         sh &apos;./gradlew update&apos;
 
     stage(&apos;Gradle Build&apos;)
-        sh &apos;./gradlew clean build publish&apos;
+        sh &apos;./gradlew clean build&apos;
 
     stage(&apos;Push to github&apos;)
             sh &apos;./addtag.sh&apos;
+<<<<<<< HEAD
+=======
+    
+    stage(&apos;Gradle Publish&apos;)
+        sh &apos;./gradlew publish&apos;
+>>>>>>> task5
 }
 </script>
     <sandbox>true</sandbox>
