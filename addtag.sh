@@ -1,3 +1,4 @@
+#!/bin/bash
 sudo git add .
 sudo git commit -m "new version"
 sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops"
