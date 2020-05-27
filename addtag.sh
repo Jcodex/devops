@@ -3,9 +3,7 @@ sudo git add .
 sudo git commit -m "new version"
 sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops"
 sudo git checkout "master"
-sudo git merge task5
-sudo git add .
-sudo git commit -m "merge master and task5"
+sudo git merge task --no-ff --no-edit
 sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops"
 value=$(<gradle.properties)
 version="${value/version = /v}"
