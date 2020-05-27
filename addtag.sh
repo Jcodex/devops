@@ -7,8 +7,8 @@ sudo git merge task5 --no-ff --no-edit
 sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops"
 value=$(<gradle.properties)
 version="${value/version = /v}"
-sudo git tag -a "$version" -m "version update"
+#sudo git tag -a "$version" -m "version update"
 sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops" "$version" 
-version="${value//version = }"
+#version="${value//version = }"
 sudo perl -i -pe 's/\d+\.\d+\.\K(\d+)/ $1+1 /e' nextversion.txt
-sudo chown jenkins gradle.properties
+#sudo chown jenkins gradle.properties
