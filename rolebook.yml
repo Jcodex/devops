@@ -76,7 +76,7 @@
 
   - name: download gradle app on tomcat1
     get_url:
-      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war'{{ lookup('file', version.txt) }}'/gradleapp-'{{ lookup('file', version.txt) }}'.war"
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
 
 - hosts: server1
