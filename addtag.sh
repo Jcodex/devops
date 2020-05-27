@@ -11,5 +11,5 @@ version="${value/version = /v}"
 sudo git tag -a "$version" -m "version update"
 version="${value//version = }"
 sudo chown jenkins gradle.properties
-sudo sed -i "s/$oldversion/$version" rolebook.yml
-sudo sed -i "s/$oldversion/$version" oldversion.txt
+sudo sed -i "s/$oldversion/$version/g" rolebook.yml
+sudo sed -i "s/$oldversion/$version/g" oldversion.txt
