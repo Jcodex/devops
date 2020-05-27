@@ -7,4 +7,4 @@ sudo git merge task5
 sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops"
 value=$(<gradle.properties)
 version="${value/version = /v}"
-sudo git tag "$version"
+sudo git tag -a "$version"
