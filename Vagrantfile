@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
         server.vm.provision :ansible do |ansible|
           ansible.limit = "all"
           ansible.verbose = "v"
-          ansible.playbook = "playbook.yml"
+          ansible.playbook = "rolebook.yml"
         end
       end
     end

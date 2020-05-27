@@ -1,0 +1,6 @@
+---
+  - include: install_jenkins.yml
+  - include: install_nexus.yml
+  - include: install_jenkins_plugins.yml
+  - include: setup_jenkins_jobs.yml
+# tasks file for setup_jenkins_nexus

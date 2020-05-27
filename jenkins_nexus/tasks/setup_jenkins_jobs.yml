@@ -1,0 +1,20 @@
+  - name: Check if jenkins online
+    uri:
+      url: "http://192.168.3.3:8080/login"
+      status_code: 200
+    register: login_page
+    until: login_page.status == 200
+    retries: 60
+    delay: 5
+
+  - jenkins_job:
+      config: "{{ lookup('file', 'gradlepipe.xml') }}"
+      name: pipe
+      password: admin
+      url: http://192.168.3.3:8080
+      user: admin
+
+  - name: Restart jenkins
+    service:
+      name: jenkins
+      state: restarted

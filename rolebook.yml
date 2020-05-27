@@ -1,0 +1,119 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  tasks: 
+  - debug:
+      msg: gather variables
+
+- hosts: all, !server1, !server2
+  become: yes
+  become_method: sudo
+#  roles:
+#    - tomcat
+
+- hosts: server1
+  become: yes
+  become_method: sudo
+#  roles:
+#   - https_apache
+
+- hosts: server2
+  become: yes
+  become_method: sudo
+#  roles:
+#    - jenkins_nexus
+
+##############BUILD NEW WEBAPP VERSION################
+- hosts: server1
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: wait for jenkins service
+    uri:
+      url: "http://192.168.3.3:8080/login"
+      status_code: 200
+    register: login_page
+    until: login_page.status == 200
+    retries: 60
+    delay: 5
+
+  - name: Queue build of a project in Jenkins
+    uri:
+      url: http://192.168.3.3:8080/job/pipe/build?token=build_me
+      user: "admin"
+      password: "admin"
+      method: GET
+      force_basic_auth: yes
+      status_code: 201
+
+  - name: wait for webapp appearing in nexus
+    uri:
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war"
+      status_code: 200
+    register: result
+    until: result.status == 200
+    retries: 60
+    delay: 5
+######################################################
+##############DEPLOY NEW WEBAPP VERSION###############
+- hosts: server1
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: remove first tomcat from balancing
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: 'BalancerMember http://192.168.3.4:8080'
+      line: #BalancerMember http://192.168.3.4:8080
+
+- hosts: server3
+  become: yes
+  become_method: sudo
+  tasks:
+
+  - name: download gradle app on tomcat1
+    get_url:
+      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war
+      dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
+
+- hosts: server1
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: add first tomcat to balancer
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: '#BalancerMember http://192.168.3.4:8080'
+      line: BalancerMember http://192.168.3.4:8080
+
+- hosts: server1
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: remove second tomcat from balancing
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: 'BalancerMember http://192.168.3.5:8080'
+      line: #BalancerMember http://192.168.3.5:8080
+
+- hosts: server4
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: download gradle app on tomcat2
+    get_url:
+      url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.1/gradleapp-1.0.1.war
+      dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
+
+- hosts: server1
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: add first tomcat to balancer
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: '#BalancerMember http://192.168.3.5:8080'
+      line: BalancerMember http://192.168.3.5:8080
+#####################################################
