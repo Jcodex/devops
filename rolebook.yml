@@ -31,7 +31,7 @@
   tasks:
   - name: download gradle app on tomcat1
     get_url:
-      url: "https://github.com/Jcodex/devops/blob/task5/nextversion.txt"
+      url: "https://raw.githubusercontent.com/Jcodex/devops/681fc940753c17a277b5af437c2fbb2e21d7ac8b/nextversion.txt"
       dest: /home
       force: yes
 ######################################################
