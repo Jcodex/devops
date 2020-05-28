@@ -24,11 +24,31 @@
 #  roles:
 #    - jenkins_nexus
 
+##############GET APP VERSION FROM GIT################
+- hosts: all, !server2
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: download gradle app on tomcat1
+    get_url:
+      url: "https://github.com/Jcodex/devops/blob/task5/nextversion.txt"
+      dest: /home
+      force: yes
+######################################################
+
 ##############BUILD NEW WEBAPP VERSION################
 - hosts: server1
   become: yes
   become_method: sudo
   tasks:
+
+  - name: register application version
+    slurp:
+      src: /home/nextversion.txt
+    register: appversion
+
+  - debug:
+      msg: "{{ appversion['content'] | b64decode }}"
 
   - name: wait for jenkins service
     uri:
@@ -47,14 +67,17 @@
       method: GET
       force_basic_auth: yes
       status_code: 201
-  - debug:
-      msg: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
+
   - name: wait for webapp appearing in nexus
     uri:
+<<<<<<< HEAD
 <<<<<<< HEAD
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war"
 =======
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
+>>>>>>> task5
+=======
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode }}/gradleapp-{{ appversion['content'] | b64decode }}.war"
 >>>>>>> task5
       status_code: 200
     register: result
@@ -78,15 +101,25 @@
   become: yes
   become_method: sudo
   tasks:
+  - name: register application version
+    slurp:
+      src: /home/nextversion.txt
+    register: appversion
 
   - name: download gradle app on tomcat1
     get_url:
+<<<<<<< HEAD
 <<<<<<< HEAD
       url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war
 =======
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
 >>>>>>> task5
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
+=======
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode }}/gradleapp-{{ appversion['content'] | b64decode }}.war"
+      dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/myapp.war
+      force: yes
+>>>>>>> task5
 
 - hosts: server1
   become: yes
@@ -114,14 +147,25 @@
   become: yes
   become_method: sudo
   tasks:
+  - name: register application version
+    slurp:
+      src: /home/nextversion.txt
+    register: appversion
+
   - name: download gradle app on tomcat2
     get_url:
+<<<<<<< HEAD
 <<<<<<< HEAD
       url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war
 =======
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
 >>>>>>> task5
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
+=======
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode }}/gradleapp-{{ appversion['content'] | b64decode }}.war"
+      dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/myapp.war
+      force: yes
+>>>>>>> task5
 
 - hosts: server1
   become: yes
@@ -134,3 +178,10 @@
       line: BalancerMember http://192.168.3.5:8080
       state: present
 #####################################################
+  - name: register application version
+    slurp:
+      src: /home/nextversion.txt
+    register: appversion
+
+  - debug:
+      msg: "Application version is {{ appversion['content'] | b64decode }}"
