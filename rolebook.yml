@@ -9,20 +9,20 @@
 - hosts: all, !server1, !server2
   become: yes
   become_method: sudo
-#  roles:
-#    - tomcat
+  roles:
+    - tomcat
 
 - hosts: server1
   become: yes
   become_method: sudo
-#  roles:
-#   - https_apache
+  roles:
+   - https_apache
 
 - hosts: server2
   become: yes
   become_method: sudo
-#  roles:
-#    - jenkins_nexus
+  roles:
+    - jenkins_nexus
 
 ##############GET APP VERSION FROM GIT################
 - hosts: all, !server2
@@ -137,7 +137,7 @@
 
   - name: download gradle app on tomcat2
     get_url:
-      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode }}/gradleapp-{{ appversion['content'] | b64decode }}.war"
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode | replace('\n', '') }}/gradleapp-{{ appversion['content'] | b64decode | replace('\n', '') }}.war"
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/myapp.war
       force: yes
 
