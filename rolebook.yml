@@ -31,7 +31,7 @@
   tasks:
   - name: download gradle app on tomcat1
     get_url:
-      url: "https://raw.githubusercontent.com/Jcodex/devops/681fc940753c17a277b5af437c2fbb2e21d7ac8b/nextversion.txt"
+      url: "https://raw.githubusercontent.com/Jcodex/devops/master/nextversion.txt"
       dest: /home
       force: yes
 ######################################################
@@ -48,7 +48,7 @@
     register: appversion
 
   - debug:
-      msg: "{{ appversion['content'] | b64decode }}"
+      msg: "{{ appversion['content'] | b64decode | replace('\n', '')}}"
 
   - name: wait for jenkins service
     uri:
@@ -72,12 +72,16 @@
     uri:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war"
 =======
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
 >>>>>>> task5
 =======
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode }}/gradleapp-{{ appversion['content'] | b64decode }}.war"
+>>>>>>> task5
+=======
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode | replace('\n', '') }}/gradleapp-{{ appversion['content'] | b64decode | replace('\n', '') }}.war"
 >>>>>>> task5
       status_code: 200
     register: result
@@ -110,6 +114,7 @@
     get_url:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       url: http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/1.0.2/gradleapp-1.0.2.war
 =======
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'nextversion.txt') }}/gradleapp-{{ lookup('file', 'nextversion.txt') }}.war"
@@ -117,6 +122,9 @@
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps
 =======
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode }}/gradleapp-{{ appversion['content'] | b64decode }}.war"
+=======
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode | replace('\n', '') }}/gradleapp-{{ appversion['content'] | b64decode | replace('\n', '') }}.war"
+>>>>>>> task5
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/myapp.war
       force: yes
 >>>>>>> task5
@@ -184,4 +192,4 @@
     register: appversion
 
   - debug:
-      msg: "Application version is {{ appversion['content'] | b64decode }}"
+      msg: "Application version is {{ appversion['content'] | b64decode | replace('\n', '') }}"
