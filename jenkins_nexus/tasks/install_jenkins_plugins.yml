@@ -13,10 +13,24 @@
       url_username: admin
       url_password: admin
       url: http://192.168.3.3:8080
-    retries: 3
+    retries: 15
     delay: 5
     register: result
     until: result is succeeded
+
+  - name: Restart jenkins
+    service:
+      name: jenkins
+      state: restarted
+
+  - name: Check if jenkins is online
+    uri:
+      url: "http://192.168.3.3:8080/login"
+      status_code: 200
+    register: login_page
+    until: login_page.status == 200
+    retries: 60
+    delay: 5
 
   - name: Download pipeline plugin
     jenkins_plugin:
@@ -24,7 +38,7 @@
       url_username: admin
       url_password: admin
       url: http://192.168.3.3:8080
-    retries: 3
+    retries: 15
     delay: 5
     register: result
     until: result is succeeded
