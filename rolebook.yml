@@ -59,18 +59,18 @@
     retries: 60
     delay: 5
 
-#  - name: Queue build of a project in Jenkins
-#    uri:
-#      url: http://192.168.3.3:8080/job/pipe/build?token=build_me
-#      user: "admin"
-#      password: "admin"
-#      method: GET
-#      force_basic_auth: yes
-#      status_code: 201
+  - name: Queue build of a project in Jenkins
+    uri:
+      url: http://192.168.3.3:8080/job/pipe/build?token=build_me
+      user: "admin"
+      password: "admin"
+      method: GET
+      force_basic_auth: yes
+      status_code: 201
 
   - name: wait for webapp appearing in nexus
     uri:
-      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode }}/gradleapp-{{ appversion['content'] | b64decode }}.war"
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode | replace('\n', '') }}/gradleapp-{{ appversion['content'] | b64decode | replace('\n', '') }}.war"
       status_code: 200
     register: result
     until: result.status == 200
@@ -100,7 +100,7 @@
 
   - name: download gradle app on tomcat1
     get_url:
-      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode }}/gradleapp-{{ appversion['content'] | b64decode }}.war"
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ appversion['content'] | b64decode | replace('\n', '') }}/gradleapp-{{ appversion['content'] | b64decode | replace('\n', '') }}.war"
       dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/myapp.war
       force: yes
 
@@ -158,4 +158,4 @@
     register: appversion
 
   - debug:
-      msg: "Application version is {{ appversion['content'] | b64decode }}"
+      msg: "Application version is {{ appversion['content'] | b64decode | replace('\n', '') }}"
