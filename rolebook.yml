@@ -59,14 +59,14 @@
     retries: 60
     delay: 5
 
-  - name: Queue build of a project in Jenkins
-    uri:
-      url: http://192.168.3.3:8080/job/pipe/build?token=build_me
-      user: "admin"
-      password: "admin"
-      method: GET
-      force_basic_auth: yes
-      status_code: 201
+#  - name: Queue build of a project in Jenkins
+#    uri:
+#      url: http://192.168.3.3:8080/job/pipe/build?token=build_me
+#      user: "admin"
+#      password: "admin"
+#      method: GET
+#      force_basic_auth: yes
+#      status_code: 201
 
   - name: wait for webapp appearing in nexus
     uri:
