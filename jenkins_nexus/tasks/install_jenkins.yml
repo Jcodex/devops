@@ -10,6 +10,27 @@
       state: latest
       update_cache: yes
 
+  - name: Install ansible
+    apt:
+      name: ansible
+      state: latest
+      update_cache: yes
+
+  - name: Add ansible hosts
+    lineinfile:
+      path: /etc/ansible/hosts
+      line: "{{ item }}"
+      state: present
+      create: yes
+    loop: "{{ groups['all'] | map('extract',hostvars,['ansible_eth1','ipv4','address']) | list }}"
+
+  - name: Recursively change ownership of a directory
+    file:
+      path: /home/vagrant/.ansible
+      state: directory
+      recurse: yes
+      owner: vagrant
+
   - name: Import Jenkins Key
     apt_key:
       url: https://pkg.jenkins.io/debian/jenkins.io.key
