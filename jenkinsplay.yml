@@ -17,7 +17,7 @@
   - name: download gradle app on tomcat1
     get_url:
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'gradle.properties') | replace('version = ', '') }}/gradleapp-{{ lookup('file', 'gradle.properties') | replace('version = ', '') }}.war"
-      dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/myapp.war
+      dest: /usr/share/tomcat/apache-tomcat-9.0.35/webapps/myapp.war
       force: yes
 
   - name: Check is everything ok with app
@@ -58,7 +58,7 @@
   - name: download gradle app on tomcat2
     get_url:
       url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'gradle.properties') | replace('version = ', '') }}/gradleapp-{{ lookup('file', 'gradle.properties') | replace('version = ', '') }}.war"
-      dest: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/myapp.war
+      dest: /usr/share/tomcat/apache-tomcat-9.0.35/webapps/myapp.war
       force: yes
 
   - name: Check is everything ok with app

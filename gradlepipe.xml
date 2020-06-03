@@ -22,7 +22,7 @@
         sh &apos;./buildcont.sh&apos;
         
     stage(&apos;deploy on tomcats&apos;)
-        sh &apos;sudo su vagrant -c ansible-playbook /var/lib/jenkins/workspace/pipe/jenkinsplay.yml&apos;    
+        sh &apos;sudo su vagrant -c &quot;ansible-playbook /var/lib/jenkins/workspace/pipe/jenkinsplay.yml&quot;&apos;    
          
     stage(&apos;Push to github&apos;)
         sh &apos;./addtag.sh&apos;

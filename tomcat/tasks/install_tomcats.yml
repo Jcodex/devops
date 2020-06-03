@@ -18,7 +18,7 @@
 
   - name: Download tomcat
     get_url:
-      url: http://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.34/bin/apache-tomcat-9.0.34.tar.gz
+      url: http://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.35/bin/apache-tomcat-9.0.35.tar.gz
       dest: /tmp
 
   - name: Create a directory if it does not exist
@@ -28,10 +28,10 @@
 
   - name: Extract apache
     unarchive:
-      src: /tmp/apache-tomcat-9.0.34.tar.gz
+      src: /tmp/apache-tomcat-9.0.35.tar.gz
       dest: /usr/share/tomcat
       remote_src: yes
-      creates: /usr/share/tomcat/apache-tomcat-9.0.34
+      creates: /usr/share/tomcat/apache-tomcat-9.0.35
 
   - name: Change file ownership, group and permissions
     file:
@@ -54,12 +54,12 @@
         Group=tomcat
         Environment="JAVA_HOME=/usr/lib/jvm/default-java"
         Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom -Djava.awt.headless=true"
-        Environment="CATALINA_BASE=/usr/share/tomcat/apache-tomcat-9.0.34"
-        Environment="CATALINA_HOME=/usr/share/tomcat/apache-tomcat-9.0.34"
-        Environment="CATALINA_PID=/usr/share/tomcat/apache-tomcat-9.0.34/temp/tomcat.pid"
+        Environment="CATALINA_BASE=/usr/share/tomcat/apache-tomcat-9.0.35"
+        Environment="CATALINA_HOME=/usr/share/tomcat/apache-tomcat-9.0.35"
+        Environment="CATALINA_PID=/usr/share/tomcat/apache-tomcat-9.0.35/temp/tomcat.pid"
         Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
-        ExecStart=/usr/share/tomcat/apache-tomcat-9.0.34/bin/startup.sh
-        ExecStop=/opt/tomcat/apache-tomcat-9.0.34/bin/shutdown.sh
+        ExecStart=/usr/share/tomcat/apache-tomcat-9.0.35/bin/startup.sh
+        ExecStop=/opt/tomcat/apache-tomcat-9.0.35/bin/shutdown.sh
         [Install]
         WantedBy=multi-user.target
   
@@ -71,7 +71,7 @@
 
   - name: create index.html
     blockinfile:
-      path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/www/index.html
+      path: /usr/share/tomcat/apache-tomcat-9.0.35/webapps/www/index.html
       create: yes
       marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
       block: |
@@ -103,7 +103,7 @@
 
   - name: create tomcat user
     blockinfile:
-      path: /usr/share/tomcat/apache-tomcat-9.0.34/conf/tomcat-users.xml
+      path: /usr/share/tomcat/apache-tomcat-9.0.35/conf/tomcat-users.xml
       create: yes
       marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
       insertbefore: </tomcat-users>
@@ -114,13 +114,13 @@
  
   - name: Allow tomcat connection from host
     lineinfile:
-      path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/manager/META-INF/context.xml
+      path: /usr/share/tomcat/apache-tomcat-9.0.35/webapps/manager/META-INF/context.xml
       regexp: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'
       line: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192.168.3.1|192.168.3.2" />'
 
   - name: Allow tomcat connection from host      
     lineinfile:
-      path: /usr/share/tomcat/apache-tomcat-9.0.34/webapps/host-manager/META-INF/context.xml
+      path: /usr/share/tomcat/apache-tomcat-9.0.35/webapps/host-manager/META-INF/context.xml
       regexp: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />'
       line: 'allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1|192.168.3.1|192.168.3.2" />'
 
