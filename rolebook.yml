@@ -29,17 +29,17 @@
 - hosts: all, !server1, !server2
   become: yes
   become_method: sudo
-#  roles:
-#    - tomcat
+  roles:
+    - tomcat
 
 - hosts: server1
   become: yes
   become_method: sudo
-#  roles:
-#   - https_apache
+  roles:
+   - https_apache
 
 - hosts: server2
   become: yes
   become_method: sudo
-#  roles:
-#    - jenkins_nexus
+  roles:
+    - jenkins_nexus

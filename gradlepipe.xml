@@ -15,11 +15,14 @@
     stage(&apos;Gradle Build&apos;)
         sh &apos;./gradlew clean build&apos;
 
-    stage(&apos;Push to github&apos;)
-            sh &apos;./addtag.sh&apos;
-    
     stage(&apos;Gradle Publish&apos;)
         sh &apos;./gradlew publish&apos;
+    
+    stage(&apos;deploy on tomcats&apos;)
+        sh &apos;ansible-playbook jenkinsplay.yml&apos;
+    
+    stage(&apos;Push to github&apos;)
+        sh &apos;addtag.sh&apos;
 }
 </script>
     <sandbox>true</sandbox>
