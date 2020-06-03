@@ -16,6 +16,18 @@
       state: latest
       update_cache: yes
 
+  - name: Install docker
+    package:
+      name: docker.io
+      state: present
+      update_cache: yes
+
+  - name: Install docker-compose
+    package:
+      name: docker-compose
+      state: present
+      update_cache: yes
+
   - name: Add ansible hosts
     lineinfile:
       path: /etc/ansible/hosts
