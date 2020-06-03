@@ -1,5 +1,4 @@
 #!/bin/bash
-sudo perl -i -pe 's/\d+\.\d+\.\K(\d+)/ $1+1 /e' nextversion.txt
 sudo git add .
 sudo git commit -m "new version"
 sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops"
