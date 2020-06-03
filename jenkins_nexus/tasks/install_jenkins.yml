@@ -24,6 +24,13 @@
       create: yes
     loop: "{{ groups['all'] | map('extract',hostvars,['ansible_eth1','ipv4','address']) | list }}"
 
+  - name: Disable ansible ssh check
+    lineinfile:
+      path: /etc/ansible/ansible.cfg
+      regexp: '#host_key_checking = False'
+      line: "host_key_checking = False"
+      state: present
+
   - name: Recursively change ownership of a directory
     file:
       path: /home/vagrant/.ansible

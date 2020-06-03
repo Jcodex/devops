@@ -8,7 +8,7 @@
     <script>node {
     stage &apos;Clone sources&apos;
           git url: &apos;https://github.com/Jcodex/devops.git&apos;, branch: &apos;task5&apos;
-
+          
     stage(&apos;Gradle Update&apos;)
         sh &apos;./gradlew update&apos;
 
@@ -17,14 +17,12 @@
 
     stage(&apos;Gradle Publish&apos;)
         sh &apos;./gradlew publish&apos;
-    
+        
     stage(&apos;deploy on tomcats&apos;)
-        sh &apos;ansible-playbook jenkinsplay.yml&apos;
-    
+        sh &apos;sudo su vagrant -c &quot;yes | ansible-playbook /var/lib/jenkins/workspace/pipe/jenkinsplay.yml&quot;&apos;    
     stage(&apos;Push to github&apos;)
         sh &apos;addtag.sh&apos;
-}
-</script>
+}</script>
     <sandbox>true</sandbox>
   </definition>
   <triggers/>
