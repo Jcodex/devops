@@ -7,7 +7,7 @@
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.80">
     <script>node {
     stage &apos;Clone sources&apos;
-          git url: &apos;https://github.com/Jcodex/devops.git&apos;, branch: &apos;task5&apos;
+        git url: &apos;https://github.com/Jcodex/devops.git&apos;, branch: &apos;task6&apos;
           
     stage(&apos;Gradle Update&apos;)
         sh &apos;./gradlew update&apos;
@@ -18,10 +18,14 @@
     stage(&apos;Gradle Publish&apos;)
         sh &apos;./gradlew publish&apos;
         
+    stage(&apos;Build and publish to local register docker tomcat container&apos;)
+        sh &apos;./buildcont.sh&apos;
+        
     stage(&apos;deploy on tomcats&apos;)
-        sh &apos;sudo su vagrant -c &quot;yes | ansible-playbook /var/lib/jenkins/workspace/pipe/jenkinsplay.yml&quot;&apos;    
+        sh &apos;sudo su vagrant -c ansible-playbook /var/lib/jenkins/workspace/pipe/jenkinsplay.yml&apos;    
+         
     stage(&apos;Push to github&apos;)
-        sh &apos;addtag.sh&apos;
+        sh &apos;./addtag.sh&apos;
 }</script>
     <sandbox>true</sandbox>
   </definition>
