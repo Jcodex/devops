@@ -1,0 +1,94 @@
+---
+- hosts: 192.168.3.2
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: remove first tomcat from balancing
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: 'BalancerMember http://192.168.3.4:8080'
+      line: "#BalancerMember http://192.168.3.4:8080"
+      state: present
+
+- hosts: 192.168.3.4
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: download gradle app on tomcat1
+    get_url:
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'gradle.properties') | replace('version = ', '') }}/gradleapp-{{ lookup('file', 'gradle.properties') | replace('version = ', '') }}.war"
+      dest: /usr/share/tomcat/apache-tomcat-9.0.35/webapps/myapp.war
+      force: yes
+
+  - name: Check is everything ok with app
+    uri:
+      url: "http://192.168.3.4:8080/myapp"
+      status_code: 200
+    register: login_page
+    until: login_page.status == 200
+    retries: 60
+    delay: 5
+
+- hosts: 192.168.3.2
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: add first tomcat to balancer
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: '#BalancerMember http://192.168.3.4:8080'
+      line: BalancerMember http://192.168.3.4:8080
+      state: present
+
+- hosts: 192.168.3.2
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: remove second tomcat from balancing
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: 'BalancerMember http://192.168.3.5:8080'
+      line: "#BalancerMember http://192.168.3.5:8080"
+      state: present
+
+- hosts: 192.168.3.5
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: download gradle app on tomcat2
+    get_url:
+      url: "http://192.168.3.3:8081/nexus/content/repositories/releases/admin/gradleapp/{{ lookup('file', 'gradle.properties') | replace('version = ', '') }}/gradleapp-{{ lookup('file', 'gradle.properties') | replace('version = ', '') }}.war"
+      dest: /usr/share/tomcat/apache-tomcat-9.0.35/webapps/myapp.war
+      force: yes
+
+  - name: Check is everything ok with app
+    uri:
+      url: "http://192.168.3.4:8080/myapp"
+      status_code: 200
+    register: login_page
+    until: login_page.status == 200
+    retries: 60
+    delay: 5
+
+- hosts: 192.168.3.2
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: add second tomcat to balancer
+    lineinfile:
+      path: /etc/apache2/sites-available/000-default.conf
+      regexp: '#BalancerMember http://192.168.3.5:8080'
+      line: BalancerMember http://192.168.3.5:8080
+      state: present
+
+  - name: Check is everything ok with app in docker container
+    uri:
+      url: "http://192.168.3.3:8084/myapp"
+      status_code: 200
+    register: login_page
+    until: login_page.status == 200
+    retries: 60
+    delay: 5
+
+  - debug:
+      msg: "Application version is {{ lookup('file', 'gradle.properties') | replace('version = ', '') }}"
