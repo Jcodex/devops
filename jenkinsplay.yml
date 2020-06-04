@@ -81,5 +81,14 @@
       line: BalancerMember http://192.168.3.5:8080
       state: present
 
+  - name: Check is everything ok with app in docker container
+    uri:
+      url: "http://192.168.3.3:8084/myapp"
+      status_code: 200
+    register: login_page
+    until: login_page.status == 200
+    retries: 60
+    delay: 5
+
   - debug:
       msg: "Application version is {{ lookup('file', 'gradle.properties') | replace('version = ', '') }}"
