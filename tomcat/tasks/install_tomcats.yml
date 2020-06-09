@@ -18,7 +18,7 @@
 
   - name: Download tomcat
     get_url:
-      url: http://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.35/bin/apache-tomcat-9.0.35.tar.gz
+      url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.35/
       dest: /tmp
 
   - name: Create a directory if it does not exist
