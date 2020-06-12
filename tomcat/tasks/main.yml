@@ -1,3 +1,0 @@
----
-# tasks file for setup_tomcat
-  - include: install_tomcats.yml
