@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include moltest"
+      include_role:
+        name: "moltest"

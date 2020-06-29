@@ -1,0 +1,17 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: instance
+    image: docker.io/pycontribs/ubuntu
+    pre_build_image: true
+    privileged: True
+volumes: 
+  /var/run/docker.sock:/var/run/docker.sock
+  /var/run/test.txt:/car/run/test.txt
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

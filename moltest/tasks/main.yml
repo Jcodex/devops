@@ -1,0 +1,37 @@
+---
+- name: Install docker
+  package:
+    name: docker.io
+    state: present
+    update_cache: yes
+
+- name: Install daemon util
+  package:
+    name: daemon
+    state: present
+    update_cache: yes
+
+- name: Configure registry
+  copy:
+    src: daemon.json
+    dest: /etc/docker
+
+- name: Start docker
+  command:
+    cmd: daemon dockerd
+
+- name: pull helloworld image to test docker
+  command:
+    cmd: docker pull hello-world
+
+#- name: run docker daemon with insecure-registry option
+#  lineinfile:
+#    path: lib/systemd/system/docker.service
+#    regexp: '^ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock'
+#    line: ExecStart=/usr/bin/dockerd -H fd:// -H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock
+    
+
+#- name: pull helloworld image to test docker
+#  command:
+#    cmd: docker pull hello-world
+# tasks file for moltest
