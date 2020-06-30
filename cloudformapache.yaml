@@ -10,7 +10,6 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
           Description: For SSH
-      SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
@@ -32,18 +31,35 @@ Resources:
           PrivateIpAddress: 10.0.0.5
           GroupSet:
             - Ref: SecurityGroupDemoSvrTraffic
-
       UserData:
-        'Fn::Base64':
-           !Sub |
-              #!/bin/bash
-              apt-get update -y
-              apt-get install apache2 -y
-              service apache2 start
-              echo '<!DOCTYPE html><html><head><title>Hello World!</title></head><body><h1>Hello World!</h1></body></html>' > /var/www/html/index.html
+        'Fn::Base64': !Sub >
+          #!/bin/bash
+
+          apt-get update -y
+
+          apt-get install apache2 -y
+
+          service apache2 start
+
+          echo '<!DOCTYPE html><html><head><title>Hello
+          World!</title></head><body><h1>Hello World!</h1></body></html>' >
+          /var/www/html/index.html
       Tags:
         - Key: name
           Value: Myapache2
         - Key: Type
           Value: MyHelloWorld
-
+  SetMyIP:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: eipalloc-04e2ef021c87fbe6c
+      InstanceId: !Ref EC2InstanceDemoSvr
+  SetMyAutoScaleGroup:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      AutoScalingGroupName: MyScale
+      InstanceId: !Ref EC2InstanceDemoSvr
+      AvailabilityZones: [us-east-2c]
+      MinSize: 1
+      MaxSize: 4
+      LoadBalancerNames: [MyBalance]
