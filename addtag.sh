@@ -7,7 +7,7 @@ sudo git merge task6 --no-ff --no-edit
 sudo git add .
 sudo git commit -m "merge master and task6"
 sudo git merge task6 --no-ff --no-edit
-sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops"
+sudo git push "https://Jcodex:
 value=$(<gradle.properties)
 version="${value/version = /v}"
 sudo git tag -a "$version" -m "version update"
