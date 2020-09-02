@@ -11,5 +11,5 @@ sudo git push "https://Jcodex:
 value=$(<gradle.properties)
 version="${value/version = /v}"
 sudo git tag -a "$version" -m "version update"
-sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops" "$version" 
+sudo git push "https://Jcodex:" "$version" 
 sudo chown jenkins gradle.properties
