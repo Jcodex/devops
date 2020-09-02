@@ -1,7 +1,7 @@
 #!/bin/bash
 sudo git add .
 sudo git commit -m "new version"
-sudo git push "https://Jcodex:MishaMisha1!@github.com/Jcodex/devops"
+sudo git push "https://Jcodex:"
 sudo git checkout "master"
 sudo git merge task6 --no-ff --no-edit
 sudo git add .
